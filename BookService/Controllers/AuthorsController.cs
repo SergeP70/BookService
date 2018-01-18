@@ -27,10 +27,12 @@ namespace BookService.Controllers
         }
 
         // GET: api/Authors/5
-        [ResponseType(typeof(Author))]
+        [ResponseType(typeof(AuthorDTO))]
         public async Task<IHttpActionResult> GetAuthor(int id)
         {
-            Author author = await db.Authors.FindAsync(id);
+            //Author author = await db.Authors.FindAsync(id);
+            AuthorDTO author = await db.Authors.ProjectTo<AuthorDTO>().SingleOrDefaultAsync(a => a.Id == id);
+
             if (author == null)
             {
                 return NotFound();

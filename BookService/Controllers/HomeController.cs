@@ -27,5 +27,10 @@ namespace BookService.Controllers
         {
             return View();
         }
+
+        public ActionResult IndexAuthor()
+        {
+            return View();
+        }
     }
 }

@@ -198,6 +198,10 @@
     <Compile Include="Migrations\201801110604282_Initial.Designer.cs">
       <DependentUpon>201801110604282_Initial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801181255346_BookPages.cs" />
+    <Compile Include="Migrations\201801181255346_BookPages.Designer.cs">
+      <DependentUpon>201801181255346_BookPages.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Author.cs" />
     <Compile Include="Models\Book.cs" />
@@ -258,6 +262,7 @@
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Home\IndexVue.cshtml" />
+    <Content Include="Views\Home\IndexAuthor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -278,6 +283,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201801110604282_Initial.resx">
       <DependentUpon>201801110604282_Initial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801181255346_BookPages.resx">
+      <DependentUpon>201801181255346_BookPages.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

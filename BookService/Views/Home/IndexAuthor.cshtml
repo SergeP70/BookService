@@ -1,0 +1,71 @@
+﻿
+@{
+    ViewBag.Title = "Authors with Vue.js";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<article id="app" class="row">
+    <header class="col-md-4">
+        <h3>{{ message }}</h3>
+        <nav>
+            <ul class="list-group">
+                <li v-for="author in authors" v-on:click="fetchAuthorBooks(author)" :class="getAuthorClass(author)" style="cursor:pointer">
+                    <span class="bookTitle">{{ author.Name }}</span>
+                </li>
+            </ul>
+        </nav>
+    </header>
+</article>
+
+
+@section scripts
+{
+    <script src="~/Scripts/vue.js"></script>
+    <script>
+        var apiURL = '/api/'
+
+        var app = new Vue({
+            el: '#app',
+            data: {
+                message: 'Loading authors...',
+                authors: null
+            },
+            created: function ()
+            {
+                var self = this;
+                this.fetchAuthors();
+            },
+            methods: 
+            {
+                fetchAuthors: function ()
+                {
+                    self = this;
+                    fetch(`${apiURL}Authors`)
+                        .then(res => res.json())
+                        .then(function (authors) {
+                            authors.forEach(function (author, i) { author.isActive = false; });
+                            self.authors = authors;
+                            self.message = 'Overview'
+                        })
+                        .catch(err => console.error('Fout: ' + err));
+                },
+                fetchAuthorBooks: function (author)
+                {
+                    self = this;
+                    self.authors.forEach(function (author2, i) { author2.isActive = false; });
+                    author.isActive = true;
+                },
+                getAuthorClass: function (author)
+                {
+                    if (author.isActive) return 'list-group-item active';
+                    return 'list-group-item';
+                }
+
+            }
+        });
+
+    </script>
+
+}
+

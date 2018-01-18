@@ -14,6 +14,7 @@
         public int Year { get; set; }
         public decimal Price { get; set; }
         public string Genre { get; set; }
+        public int Pages { get; set; }
         public int AuthorId { get; set; }
         public string AuthorName { get; set; }
     }

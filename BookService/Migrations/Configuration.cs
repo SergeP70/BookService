@@ -28,7 +28,9 @@ namespace BookService.Migrations
                     Year = 1813,
                     AuthorId = 1,
                     Price = 9.99M,
-                    Genre = "Comedy of manners"
+                    Genre = "Comedy of manners",
+                    Pages= 100
+                    
                 },
                 new Book()
                 {
@@ -37,7 +39,8 @@ namespace BookService.Migrations
                     Year = 1817,
                     AuthorId = 1,
                     Price = 12.95M,
-                    Genre = "Gothic parody"
+                    Genre = "Gothic parody",
+                    Pages = 200
                 },
                 new Book()
                 {
@@ -46,7 +49,8 @@ namespace BookService.Migrations
                     Year = 1850,
                     AuthorId = 2,
                     Price = 15,
-                    Genre = "Bildungsroman"
+                    Genre = "Bildungsroman",
+                    Pages= 300
                 },
                 new Book()
                 {
@@ -55,7 +59,8 @@ namespace BookService.Migrations
                     Year = 1617,
                     AuthorId = 3,
                     Price = 8.95M,
-                    Genre = "Picaresque"
+                    Genre = "Picaresque",
+                    Pages = 350
                 });
         }
     }
