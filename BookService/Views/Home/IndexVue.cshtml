@@ -1,7 +1,89 @@
-﻿
-@{
+﻿@{
     ViewBag.Title = "Books with a Vue";
 }
 
 <h2>@ViewBag.Title</h2>
 
+<article id="app" class="row">
+    <header class="col-md-4">
+        <h3>{{ message }}</h3>
+        <nav>
+            <ul class="list-group">
+                <li v-for="book in books" v-on:click="fetchBookDetails(book)" :class="getBookClass(book)" style="cursor:pointer">
+                    <span class="bookTitle">{{ book.Title }}</span>
+                    <span class="bookAuthorName">{{ book.AuthorName }}</span>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <article v-if="currentBook" class="col-md-4">
+        <h3>Details</h3>
+        <div>
+            <table cellpadding="8em">
+                <tr>
+                    <td>Title:</td>
+                    <td class="bookTitle">{{ currentBook.Title}}</td>
+                </tr>
+                <tr>
+                    <td>Author:</td>
+                    <td class="bookAuthorName">{{ currentBook.AuthorName}}</td>
+                </tr>
+                <tr>
+                    <td>Genre:</td>
+                    <td>{{ currentBook.Genre}}</td>
+                </tr>
+                <tr>
+                    <td>Price:</td>
+                    <td>{{ currentBook.Price}}</td>
+                </tr>
+            </table>
+        </div>
+    </article>
+</article>
+
+
+@section scripts 
+{
+    <script src="~/Scripts/vue.js"></script>
+    <script>
+        var apiURL = '/api/'
+        var app = new Vue(
+            {
+                el: '#app',
+                data: {
+                    message: 'Loading books...',
+                    books: null
+                },
+                created: function () {
+                    var self = this;
+                    this.fetchBooks();
+                },
+                methods:
+                {
+                    fetchBooks: function () {
+                        self = this;
+                        fetch(`${apiURL}Books`)
+                            .then(res => res.json())
+                            .then(function (books) {
+                                books.forEach(function (book, i)
+                                { book.isActive = false; });
+                                self.books = books;
+                                self.message = 'Overview'
+                            })
+                            .cat(err => console.error('Fout: ' + err));
+                    },
+                    fetchBookDetails: function (book)
+                    {
+                        self = this;
+                        self.books.forEach(function (book2, i) { book2.isActive = false; })
+                        book.isActive = true;
+                    },
+                    getBookClass: function (book)
+                    {
+                        if (book.isActive) return 'list-group-item active';
+                        return 'list-group-item';
+                    }
+                }
+            });
+    </script>
+}

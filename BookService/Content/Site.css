@@ -15,3 +15,14 @@ select,
 textarea {
     max-width: 280px;
 }
+
+.bookTitle {
+    color: darkblue;
+    font-size: small;
+}
+
+.bookAuthorName {
+    color: darkred;
+    font-style: italic;
+    font-size: small;
+}
