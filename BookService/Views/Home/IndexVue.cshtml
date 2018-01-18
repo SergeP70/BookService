@@ -52,7 +52,8 @@
                 el: '#app',
                 data: {
                     message: 'Loading books...',
-                    books: null
+                    books: null,
+                    currentBook: null
                 },
                 created: function () {
                     var self = this;
@@ -68,15 +69,24 @@
                                 books.forEach(function (book, i)
                                 { book.isActive = false; });
                                 self.books = books;
-                                self.message = 'Overview'
+                                self.message = 'Overview';
+                                if (self.books.length > 0)
+                                    self.fetchBookDetails(self.books[0]);
                             })
                             .cat(err => console.error('Fout: ' + err));
                     },
                     fetchBookDetails: function (book)
                     {
                         self = this;
-                        self.books.forEach(function (book2, i) { book2.isActive = false; })
-                        book.isActive = true;
+                        fetch(`${apiURL}Books/${book.Id}`)
+                            .then(res => res.json())
+                            .then(function (res) {
+                                self.currentBook = res;
+                                self.books.forEach(function (book, i) { book.isActive = false });
+                                book.isActive = true;
+                            })
+                            .cat(err => console.err('Fout: ' + err));
+
                     },
                     getBookClass: function (book)
                     {
