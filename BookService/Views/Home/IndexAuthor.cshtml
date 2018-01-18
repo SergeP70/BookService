@@ -16,6 +16,19 @@
             </ul>
         </nav>
     </header>
+    <article v-if="currentBook" class="col-md-4">
+        <h3>Books from Author</h3>
+        <div>
+            <nav>
+                <ul class="list-group">
+                    <li v-for="book in books" >
+                        <span class="bookAuthorName">{{ book.Title }}</span>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </article>
 </article>
 
 
@@ -29,7 +42,8 @@
             el: '#app',
             data: {
                 message: 'Loading authors...',
-                authors: null
+                authors: null,
+                books: null
             },
             created: function ()
             {
@@ -60,7 +74,8 @@
                 {
                     if (author.isActive) return 'list-group-item active';
                     return 'list-group-item';
-                }
+                },
+                
 
             }
         });
