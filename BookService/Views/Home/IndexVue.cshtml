@@ -18,7 +18,32 @@
     </header>
     <article v-if="currentBook" class="col-md-4">
         <h3>Details</h3>
-        <div>
+        <div v-if="editMode" class="form-group">
+            <table>
+                <tr>
+                    <td>Title:</td>
+                    <td><input v-model="currentBook.Title" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>Author:</td>
+                    <td>
+                        <select v-model="currentBook.AuthorId" class="form-control">
+                            <option v-for="author in authors" v-bind:value="author.Id">{{ author.Name }}</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>Genre:</td>
+                    <td><input v-model="currentBook.Genre" class="form-control"></td>
+                </tr>
+                <tr>
+                    <td>Price:</td>
+                    <td><input v-model="currentBook.Price" class="form-control"></td>
+                </tr>
+            </table>
+            <button v-on:click="save" class="btn btn-primary">Save</button>
+        </div>
+        <div v-else>
             <table cellpadding="8em">
                 <tr>
                     <td>Title:</td>
@@ -37,6 +62,9 @@
                     <td>{{ currentBook.Price}}</td>
                 </tr>
             </table>
+            <button v-on:click="toEditMode(true)" class="btn btn-primary">Edit</button>
+            <button v-on:click="toEditMode(false)" class="btn btn-warning">New</button>
+            <button v-on:click="deleteBook()" class="btn btn-danger">Delete</button>
         </div>
     </article>
 </article>
@@ -53,11 +81,15 @@
                 data: {
                     message: 'Loading books...',
                     books: null,
-                    currentBook: null
+                    currentBook: null,
+                    authors: null,
+                    editMode: false,
+                    isEdit: false
                 },
                 created: function () {
                     var self = this;
                     this.fetchBooks();
+                    this.fetchAuthors();
                 },
                 methods:
                 {
@@ -73,7 +105,7 @@
                                 if (self.books.length > 0)
                                     self.fetchBookDetails(self.books[0]);
                             })
-                            .cat(err => console.error('Fout: ' + err));
+                            .catch(err => console.error('Fout: ' + err));
                     },
                     fetchBookDetails: function (book)
                     {
@@ -85,13 +117,93 @@
                                 self.books.forEach(function (book, i) { book.isActive = false });
                                 book.isActive = true;
                             })
-                            .cat(err => console.err('Fout: ' + err));
+                            .catch(err => console.err('Fout: ' + err));
 
                     },
                     getBookClass: function (book)
                     {
                         if (book.isActive) return 'list-group-item active';
                         return 'list-group-item';
+                    },
+                    fetchAuthors: function ()
+                    {
+                        self = this;
+                        fetch(`${apiURL}Authors`)
+                            .then(res => res.json())
+                            .then(function (res) { self.authors = res; })
+                            .catch(err => console.err('Fout: ' + err));
+                    },
+                    toEditMode: function (isEdit)
+                    {
+                        self = this;
+                        this.editMode = true;
+                        this.isEdit = isEdit;
+                        if (!isEdit) {
+                            self.currentBook = { Id: 0, Title: '', AuthorId: 0, Genre: '', Price: 0}
+                        }
+                    },
+                    save: function () {
+                        var self = this
+                        // opslaan - ajax configuratie
+                        var ajaxHeaders = new Headers();
+                        ajaxHeaders.append("Content-Type", "application/json");
+                        var ajaxConfig = {
+                            method: 'PUT',
+                            body: JSON.stringify(self.currentBook),
+                            headers: ajaxHeaders
+                        }
+                        // opslaan: edit of toevoegen
+                        if (self.isEdit) {
+                            var myRequest = new Request(`${apiURL}Books/${self.currentBook.Id}`, ajaxConfig)
+                        }
+                        else {
+                            ajaxConfig.method = 'POST';
+                            var myRequest = new Request(`${apiURL}Books/`, ajaxConfig)
+                        }
+                        fetch(myRequest)
+                            .then(res => res.json())
+                            .then(function (res) {
+                                // GUI Aanpassen - wat extra taakjes doordat in lijst BookDTO's staan en in detailweergave BookDetailDTO getoond wordt
+                                // nieuwe auteursnaam ophalen
+                                theAuthor = self.authors.filter(author => (author.Id === self.currentBook.AuthorId))[0];
+                                self.currentBook.AuthorName = theAuthor.Name;
+                                if (self.isEdit) {
+                                    // het geupdate boek uit de boekenlijst ophalen
+                                    theBook = self.books.filter(book => (book.Id === self.currentBook.Id))[0];
+                                    // gegevens aanpassen
+                                    theBook.Title = self.currentBook.Title;
+                                    theBook.AuthorName = theAuthor.Name;
+                                } else {
+                                    // boek toevoegen aan de lijst - we voegen eigenlijk een bookdetailDTO to ipv bookDTO
+                                    console.log(res);
+                                    self.currentBook.Id = res.Id;
+                                    self.books.push(self.currentBook);
+                                    self.fetchBookDetails(self.books[self.books.length - 1]);
+                                }
+                                self.editMode = false;
+                            })
+                            .catch(err => console.error('Fout: ' + err));
+                    },
+                    deleteBook: function ()
+                    {
+                        self = this;
+                        fetch(`${apiURL}Books/${self.currentBook.Id}`, { method: 'DELETE' })
+                            .then(res => res.json())
+                            .then(function (res)
+                            {
+                                // boek verwijderen uit de lijst
+                                self.books.forEach(function (book, i)
+                                {
+                                    if (book.Id == self.currentBook.Id) {
+                                        self.books.splice(i, 1);
+                                        return;
+                                    }
+                                })
+                                // eerste boek selecteren
+                                if (self.books.length > 0)
+                                    self.fetchBookDetails(self.books[0]);
+                            })
+                            .catch(err => console.error('Fout: ' + err));
                     }
                 }
             });
